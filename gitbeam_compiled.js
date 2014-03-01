@@ -9,20 +9,20 @@ goog.require('lt.objs.editor.pool');
 * @param {...*} var_args
 */
 lt.plugins.gitbeam.util.sh = (function() { 
-var sh__delegate = function (cmd,args){var vec__8257 = ((cljs.core.map_QMARK_.call(null,cljs.core.last.call(null,args)))?new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.butlast.call(null,args),cljs.core.last.call(null,args)], null):new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [args,cljs.core.PersistentArrayMap.EMPTY], null));var args__$1 = cljs.core.nth.call(null,vec__8257,0,null);var options = cljs.core.nth.call(null,vec__8257,1,null);var stdout_fn = (function (){var or__6758__auto__ = new cljs.core.Keyword(null,"stdout","stdout",4416474557).cljs$core$IFn$_invoke$arity$1(options);if(cljs.core.truth_(or__6758__auto__))
-{return or__6758__auto__;
+var sh__delegate = function (cmd,args){var vec__8143 = ((cljs.core.map_QMARK_.call(null,cljs.core.last.call(null,args)))?new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.butlast.call(null,args),cljs.core.last.call(null,args)], null):new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [args,cljs.core.PersistentArrayMap.EMPTY], null));var args__$1 = cljs.core.nth.call(null,vec__8143,0,null);var options = cljs.core.nth.call(null,vec__8143,1,null);var stdout_fn = (function (){var or__6755__auto__ = new cljs.core.Keyword(null,"stdout","stdout",4416474557).cljs$core$IFn$_invoke$arity$1(options);if(cljs.core.truth_(or__6755__auto__))
+{return or__6755__auto__;
 } else
-{return ((function (or__6758__auto__,vec__8257,args__$1,options){
+{return ((function (or__6755__auto__,vec__8143,args__$1,options){
 return (function (stdout){if(cljs.core.seq.call(null,stdout))
 {return cljs.core.println.call(null,"STDOUT: ",stdout);
 } else
 {return null;
 }
 });
-;})(or__6758__auto__,vec__8257,args__$1,options))
+;})(or__6755__auto__,vec__8143,args__$1,options))
 }
-})();return require("child_process").execFile(cmd,cljs.core.clj__GT_js.call(null,(function (){var or__6758__auto__ = args__$1;if(cljs.core.truth_(or__6758__auto__))
-{return or__6758__auto__;
+})();return require("child_process").execFile(cmd,cljs.core.clj__GT_js.call(null,(function (){var or__6755__auto__ = args__$1;if(cljs.core.truth_(or__6755__auto__))
+{return or__6755__auto__;
 } else
 {return cljs.core.PersistentVector.EMPTY;
 }
@@ -44,9 +44,9 @@ var args = null;if (arguments.length > 1) {
   args = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1),0);} 
 return sh__delegate.call(this,cmd,args);};
 sh.cljs$lang$maxFixedArity = 1;
-sh.cljs$lang$applyTo = (function (arglist__8258){
-var cmd = cljs.core.first(arglist__8258);
-var args = cljs.core.rest(arglist__8258);
+sh.cljs$lang$applyTo = (function (arglist__8144){
+var cmd = cljs.core.first(arglist__8144);
+var args = cljs.core.rest(arglist__8144);
 return sh__delegate(cmd,args);
 });
 sh.cljs$core$IFn$_invoke$arity$variadic = sh__delegate;
@@ -63,26 +63,41 @@ goog.provide('lt.plugins.gitbeam.in$');
 goog.require('cljs.core');
 goog.require('lt.objs.files');
 goog.require('lt.object');
+goog.require('clojure.string');
 goog.require('lt.objs.workspace');
+goog.require('lt.objs.notifos');
+goog.require('lt.objs.notifos');
 goog.require('lt.objs.workspace');
 goog.require('lt.objs.command');
 goog.require('lt.objs.files');
+goog.require('clojure.string');
 goog.require('lt.object');
 goog.require('lt.plugins.gitbeam.util');
 goog.require('lt.plugins.gitbeam.util');
 goog.require('lt.objs.command');
 lt.plugins.gitbeam.in$.clone_dir = lt.objs.files.home.call(null,".gitbeam");
-lt.plugins.gitbeam.in$.new_window_and_workspace = (function new_window_and_workspace(repo_dir){return lt.object.raise.call(null,lt.objs.workspace.current_ws,new cljs.core.Keyword(null,"add.folder!","add.folder!",2151595160),repo_dir);
+lt.plugins.gitbeam.in$.add_folder = (function add_folder(repo_dir){return lt.object.raise.call(null,lt.objs.workspace.current_ws,new cljs.core.Keyword(null,"add.folder!","add.folder!",2151595160),repo_dir);
+});
+lt.plugins.gitbeam.in$.add_repo = (function add_repo(url,repo_dir){if(cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null,repo_dir)))
+{return lt.plugins.gitbeam.util.sh.call(null,"git","pull",new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"cwd","cwd",1014003170),repo_dir,new cljs.core.Keyword(null,"callback","callback",841683895),cljs.core.partial.call(null,lt.plugins.gitbeam.in$.add_folder,repo_dir)], null));
+} else
+{return lt.plugins.gitbeam.util.sh.call(null,"git","clone",url,repo_dir,new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"callback","callback",841683895),cljs.core.partial.call(null,lt.plugins.gitbeam.in$.add_folder,repo_dir)], null));
+}
 });
 lt.plugins.gitbeam.in$.clone_project = (function clone_project(url){if(cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null,lt.plugins.gitbeam.in$.clone_dir)))
 {} else
 {lt.objs.files.mkdir.call(null,lt.plugins.gitbeam.in$.clone_dir);
 }
-var basename = cljs.core.second.call(null,cljs.core.re_find.call(null,/([^\/]+)\/?$/,url));var repo_dir = lt.objs.files.join.call(null,lt.plugins.gitbeam.in$.clone_dir,basename);return lt.plugins.gitbeam.util.sh.call(null,"git","clone",url,repo_dir,new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"callback","callback",841683895),cljs.core.partial.call(null,lt.plugins.gitbeam.in$.new_window_and_workspace,repo_dir)], null));
+var temp__4090__auto__ = (function (){var G__8162 = cljs.core.re_find.call(null,/([^\/]+\/[^\/]+)\/?$/,url);var G__8162__$1 = (((G__8162 == null))?null:cljs.core.second.call(null,G__8162));var G__8162__$2 = (((G__8162__$1 == null))?null:clojure.string.replace.call(null,G__8162__$1,"/","_"));return G__8162__$2;
+})();if(cljs.core.truth_(temp__4090__auto__))
+{var basename = temp__4090__auto__;return lt.plugins.gitbeam.in$.add_repo.call(null,url,lt.objs.files.join.call(null,lt.plugins.gitbeam.in$.clone_dir,basename));
+} else
+{return lt.objs.notifos.set_msg_BANG_.call(null,[cljs.core.str(url),cljs.core.str(" is not a clonable url. Please try again.")].join(''));
+}
 });
 lt.plugins.gitbeam.in$.clone_project_from_clipboard = (function clone_project_from_clipboard(){return lt.plugins.gitbeam.util.sh.call(null,"pbpaste",new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"stdout","stdout",4416474557),lt.plugins.gitbeam.in$.clone_project], null));
 });
-lt.objs.command.command.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"command","command",1964298941),new cljs.core.Keyword(null,"gitbeam.clone-project-from-clipboard","gitbeam.clone-project-from-clipboard",4800063126),new cljs.core.Keyword(null,"desc","desc",1016984067),"gitbeam: clones project locally from url in clipboar",new cljs.core.Keyword(null,"exec","exec",1017031683),lt.plugins.gitbeam.in$.clone_project_from_clipboard], null));
+lt.objs.command.command.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"command","command",1964298941),new cljs.core.Keyword(null,"gitbeam.clone-project-from-clipboard","gitbeam.clone-project-from-clipboard",4800063126),new cljs.core.Keyword(null,"desc","desc",1016984067),"gitbeam: clones project using clipboard url",new cljs.core.Keyword(null,"exec","exec",1017031683),lt.plugins.gitbeam.in$.clone_project_from_clipboard], null));
 }
 if(!lt.util.load.provided_QMARK_('lt.plugins.gitbeam.out')) {
 goog.provide('lt.plugins.gitbeam.out');

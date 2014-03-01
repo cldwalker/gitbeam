@@ -9,28 +9,48 @@
 
 (def clone-dir (files/home ".gitbeam"))
 
-(defn add-folder [repo-dir]
-  #_(cmd/exec! :window.new)
-  (obj/raise workspace/current-ws :add.folder! repo-dir))
+(def repo-path-regex "Matches against user/repo and optional path"
+  #"github\.com/([^/]+/[^/]+)(.*)?$")
 
-(defn add-repo [url repo-dir]
-  (if (files/exists? repo-dir)
-    ;; TODO: double check it's the correct repo with remote -v
-    (util/sh "git" "pull"
+(defn open-path [path]
+  (if (files/file? path)
+    (cmd/exec! :open-path path)
+    (notifos/set-msg! (str path " is not a valid file to open"))))
+
+(defn add-folder [url repo-dir]
+  ;; TODO: (cmd/exec! :window.new)
+  (obj/raise workspace/current-ws :add.folder! repo-dir)
+
+  (when-let [[_ commit relative-path] (some->> url
+                                               (re-find repo-path-regex)
+                                               last
+                                               (re-find #"/[^/]+/([^/]+)/(.*)"))]
+    ;; TODO: distinguish real stderr from "already on master" non-error
+    (util/sh "git" "checkout" commit
              {:cwd repo-dir
-              :callback (partial add-folder repo-dir)})
-    ;; we use :callback here because clone sometimes stderrs
-    ;; even when it has succeeded
-    (util/sh "git" "clone" url repo-dir
-             {:callback (partial add-folder repo-dir)})))
+              :callback (partial open-path
+                                 (files/join repo-dir relative-path))})))
+
+(defn add-repo [url basename]
+  (let [repo-dir (files/join clone-dir (s/replace basename "/" "_"))]
+    (if (files/exists? repo-dir)
+      ;; TODO: double check it's the correct repo with remote -v
+      (util/sh "git" "pull"
+               {:cwd repo-dir
+                :callback (partial add-folder url repo-dir)})
+      ;; we use :callback here because clone sometimes stderrs
+      ;; even when it has succeeded
+      (util/sh "git" "clone"
+               (re-find (re-pattern (str ".*" basename))
+                        url)
+               repo-dir
+               {:callback (partial add-folder url repo-dir)}))))
 
 (defn clone-project [url]
   (when-not (files/exists? clone-dir)
     (files/mkdir clone-dir))
-  (if-let [basename (some-> (re-find #"([^/]+/[^/]+)/?$" url)
-                            second
-                            (s/replace "/" "_"))]
-    (add-repo url (files/join clone-dir basename))
+  (if-let [basename (->> url (re-find repo-path-regex) second)]
+    (add-repo url basename)
     (notifos/set-msg! (str url " is not a clonable url. Please try again."))))
 
 (defn clone-project-from-clipboard []

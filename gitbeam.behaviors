@@ -1,2 +1,1 @@
-{:+ {:app [(:lt.objs.plugins/load-js "gitbeam_compiled.js")]
-     :gitbeam.hello [:lt.plugins.gitbeam/on-close-destroy]}}
+{:+ {:app [(:lt.objs.plugins/load-js "gitbeam_compiled.js")]}}

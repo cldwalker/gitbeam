@@ -61,6 +61,28 @@ lt.plugins.gitbeam.util.get_cwd = (function get_cwd(){return lt.objs.files.paren
 if(!lt.util.load.provided_QMARK_('lt.plugins.gitbeam.in')) {
 goog.provide('lt.plugins.gitbeam.in$');
 goog.require('cljs.core');
+goog.require('lt.objs.files');
+goog.require('lt.object');
+goog.require('lt.objs.workspace');
+goog.require('lt.objs.workspace');
+goog.require('lt.objs.command');
+goog.require('lt.objs.files');
+goog.require('lt.object');
+goog.require('lt.plugins.gitbeam.util');
+goog.require('lt.plugins.gitbeam.util');
+goog.require('lt.objs.command');
+lt.plugins.gitbeam.in$.clone_dir = lt.objs.files.home.call(null,".gitbeam");
+lt.plugins.gitbeam.in$.new_window_and_workspace = (function new_window_and_workspace(repo_dir){return lt.object.raise.call(null,lt.objs.workspace.current_ws,new cljs.core.Keyword(null,"add.folder!","add.folder!",2151595160),repo_dir);
+});
+lt.plugins.gitbeam.in$.clone_project = (function clone_project(url){if(cljs.core.truth_(lt.objs.files.exists_QMARK_.call(null,lt.plugins.gitbeam.in$.clone_dir)))
+{} else
+{lt.objs.files.mkdir.call(null,lt.plugins.gitbeam.in$.clone_dir);
+}
+var basename = cljs.core.second.call(null,cljs.core.re_find.call(null,/([^\/]+)\/?$/,url));var repo_dir = lt.objs.files.join.call(null,lt.plugins.gitbeam.in$.clone_dir,basename);return lt.plugins.gitbeam.util.sh.call(null,"git","clone",url,repo_dir,new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"callback","callback",841683895),cljs.core.partial.call(null,lt.plugins.gitbeam.in$.new_window_and_workspace,repo_dir)], null));
+});
+lt.plugins.gitbeam.in$.clone_project_from_clipboard = (function clone_project_from_clipboard(){return lt.plugins.gitbeam.util.sh.call(null,"pbpaste",new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"stdout","stdout",4416474557),lt.plugins.gitbeam.in$.clone_project], null));
+});
+lt.objs.command.command.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"command","command",1964298941),new cljs.core.Keyword(null,"gitbeam.clone-project-from-clipboard","gitbeam.clone-project-from-clipboard",4800063126),new cljs.core.Keyword(null,"desc","desc",1016984067),"gitbeam: clones project locally from url in clipboar",new cljs.core.Keyword(null,"exec","exec",1017031683),lt.plugins.gitbeam.in$.clone_project_from_clipboard], null));
 }
 if(!lt.util.load.provided_QMARK_('lt.plugins.gitbeam.out')) {
 goog.provide('lt.plugins.gitbeam.out');
@@ -92,8 +114,6 @@ goog.provide('lt.plugins.gitbeam');
 goog.require('cljs.core');
 goog.require('lt.objs.command');
 goog.require('lt.objs.command');
-goog.require('lt.object');
-goog.require('lt.object');
 }
 
 //# sourceMappingURL=gitbeam_compiled.js.map

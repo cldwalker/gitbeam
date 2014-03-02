@@ -1,5 +1,6 @@
 (ns lt.plugins.gitbeam.in
   (:require [lt.plugins.gitbeam.util :as util]
+            [lt.plugins.gitbeam.github :as github]
             [lt.object :as obj]
             [lt.objs.command :as cmd]
             [lt.objs.notifos :as notifos]
@@ -11,18 +12,6 @@
 
 (def clone-dir (files/home ".gitbeam"))
 
-(def repo-path-regex "Matches against user/repo and optional path"
-  #"github\.com/([^/]+/[^/]+)(.*)?$")
-
-(defn get-path-and-lines [path]
-  (let [[_ path from-line to-line] (re-find #"([^#]+)(?:#L(\d+)(?:-L(\d+)|$))?" path)
-        from-line (js/parseInt from-line)
-        to-line (js/parseInt to-line)]
-    (cond
-     (and from-line to-line) [path {:from from-line :to to-line}]
-     from-line [path {:from from-line :to from-line}]
-     :else [path nil])))
-
 (defn select-lines [from to]
   (when-let [ed (pool/last-active)]
     (editor/set-selection
@@ -31,7 +20,7 @@
      {:line (dec to) :ch (editor/line-length ed (dec to))})))
 
 (defn open-path [path]
-  (let [[path lines] (get-path-and-lines path)]
+  (let [[path lines] (github/get-path-and-lines path)]
     (if (files/file? path)
       (do (cmd/exec! :open-path path)
         (when lines
@@ -42,10 +31,7 @@
   ;; TODO: (cmd/exec! :window.new)
   (obj/raise workspace/current-ws :add.folder! repo-dir)
 
-  (when-let [[_ commit relative-path] (some->> url
-                                               (re-find repo-path-regex)
-                                               last
-                                               (re-find #"/[^/]+/([^/]+)/(.*)"))]
+  (when-let [[commit relative-path] (github/get-commit-and-path url)]
     ;; TODO: distinguish real stderr from "already on master" non-error
     (util/sh "git" "checkout" commit
              {:cwd repo-dir
@@ -70,7 +56,7 @@
 (defn clone-project [url]
   (when-not (files/exists? clone-dir)
     (files/mkdir clone-dir))
-  (if-let [basename (->> url (re-find repo-path-regex) second)]
+  (if-let [basename (github/get-project-name url)]
     (add-repo url basename)
     (notifos/set-msg! (str url " is not a clonable url. Please try again."))))
 

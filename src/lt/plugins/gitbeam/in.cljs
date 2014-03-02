@@ -66,26 +66,3 @@
 (cmd/command {:command :gitbeam.clone-project-from-clipboard
               :desc "gitbeam: clones project using clipboard url"
               :exec clone-project-from-clipboard})
-
-(comment
-  (util/sh "ls" {:cwd "/Users/gabrielhorner"})
-  (clone-project-from-clipboard)
-  (defn capture [cmd vars cb]
-    (.exec (js/require "child_process") (str cmd " && " (lt.objs.proc/var-caps vars))
-           (clj->js {:cwd (get-git-root (get-cwd)) })
-           (fn [err out serr]
-             (prn out)
-             (let [vs (zipmap vars (s/split out ";"))]
-               (cb vs)))))
-   (capture "REMOTE_URL=`git config --get remote.origin.url`;COMMIT=`git rev-parse HEAD`"
-                         ["REMOTE_URL" "COMMIT"] prn)
-  (sh "pbpaste")
-  (get-git-root (get-cwd))
-  (def w (lt.objs.app/open-window))
-  (cmd/exec! :window.new)
-  (lt.object/raise workspace/current-ws :add.folder! "/Users/me/code/world/fs")
-  (-> (lt.object/instances-by-type :lt.objs.sidebar.workspace/workspace.folder)
-      (nth 1)
-      deref
-      :path)
-  )

@@ -15,7 +15,6 @@
      from-line [path {:from from-line :to from-line}]
      :else [path nil])))
 
-
 (defn get-commit-and-path [url]
   (some->> url
            (re-find repo-path-regex)

@@ -1,5 +1,7 @@
 (ns lt.plugins.gitbeam.util
   (:require [lt.objs.editor.pool :as pool]
+            [lt.objs.proc :as proc]
+            [clojure.string :as s]
             [lt.objs.files :as files]))
 
 ;; Until lt.objs.proc/exec works
@@ -29,3 +31,11 @@
 (defn get-cwd []
   (files/parent
    (-> @(pool/last-active) :info :path)))
+
+(defn capture
+  "Same as lt.objs.proc/capture but takes shell options e.g. :cwd and gives back stderr to callback."
+  [cmd vars cb sh-opts]
+  (.exec (js/require "child_process") (str cmd " && " (proc/var-caps vars))
+         (clj->js sh-opts)
+         (fn [err out stderr]
+           (cb (zipmap vars (s/split out ";")) stderr))))

@@ -5,6 +5,7 @@
             [lt.objs.editor.pool :as pool]
             [lt.objs.editor :as editor]
             [lt.objs.command :as cmd]
+            [lt.objs.notifos :as notifos]
             [lt.objs.files :as files]))
 
 (defn git-remote->base-url [git-remote]
@@ -25,10 +26,10 @@
             to (-> selection (get-in [:to :line]) js/parseInt inc)]
         (github/build-line-selection from to)))))
 
-(defn open-git-remote [git-remote]
-  (-> (->> git-remote (re-find #"origin\t(\S+)") second)
+(defn open-by-remote-and-commit [remote commit]
+  (-> (->> remote (re-find #"origin\t(\S+)") second)
       git-remote->base-url
-      (github/build-url "master"
+      (github/build-url commit
                         (str
                          (files/relative
                           (util/get-git-root (util/get-cwd))
@@ -36,12 +37,20 @@
                          (selected-lines)))
       open))
 
+(defn process-git-commands [{commit "COMMIT" remote "REMOTE"} stderr]
+  (if (and commit remote)
+    (open-by-remote-and-commit remote commit)
+    (do
+      (.log js/console "STDERR:" stderr)
+      (notifos/set-msg! "Unable to acquire all git information necessary to open a url."))))
+
 (defn open-current-file-with-browser []
-  ;; don't use `git config --get remote.origin.url` which doesn't
-  ;; expand aliased urls
-  (util/sh "git" "remote" "-v"
-      {:cwd (util/get-git-root (util/get-cwd))
-       :stdout open-git-remote}))
+  ;; To figure out remote, don't use `git config --get remote.origin.url`
+  ;; which doesn't expand aliased urls
+  (util/capture "REMOTE=`git remote -v`;COMMIT=`git rev-parse HEAD`"
+                ["REMOTE" "COMMIT"]
+                process-git-commands
+                {:cwd (util/get-git-root (util/get-cwd))}))
 
 (cmd/command {:command :gitbeam.open-current-file-with-browser
               :desc "gitbeam: opens current file on github with external browser"

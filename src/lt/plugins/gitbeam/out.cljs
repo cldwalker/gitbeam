@@ -3,6 +3,7 @@
             [lt.plugins.gitbeam.github :as github]
             [clojure.string :as s]
             [lt.objs.editor.pool :as pool]
+            [lt.objs.editor :as editor]
             [lt.objs.command :as cmd]
             [lt.objs.files :as files]))
 
@@ -12,18 +13,27 @@
       github/git-remote->url
       (s/replace #"\.git$" "")))
 
-
 ;; OSX-specific for now
 (defn open [url]
   (util/sh "open" url))
+
+(defn selected-lines []
+  (when-let [ed (pool/last-active)]
+    (when (editor/selection? ed)
+      (let [selection (editor/selection-bounds ed)
+            from (-> selection (get-in [:from :line]) js/parseInt inc)
+            to (-> selection (get-in [:to :line]) js/parseInt inc)]
+        (github/build-line-selection from to)))))
 
 (defn open-git-remote [git-remote]
   (-> (->> git-remote (re-find #"origin\t(\S+)") second)
       git-remote->base-url
       (github/build-url "master"
-                  (files/relative
-                   (util/get-git-root (util/get-cwd))
-                   (-> @(pool/last-active) :info :path)))
+                        (str
+                         (files/relative
+                          (util/get-git-root (util/get-cwd))
+                          (-> @(pool/last-active) :info :path))
+                         (selected-lines)))
       open))
 
 (defn open-current-file-with-browser []

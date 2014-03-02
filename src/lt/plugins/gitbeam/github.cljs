@@ -26,8 +26,6 @@
 (defn get-project-name [url]
   (->> url (re-find repo-path-regex) second))
 
-
-
 ;; beam out
 ;; --------
 (defn build-url [base-url commit relative-url]
@@ -35,3 +33,8 @@
 
 (defn git-remote->url [git-remote]
   (s/replace git-remote #"^git@github.com:" "https://github.com/"))
+
+(defn build-line-selection [from to]
+  (if (= from to)
+    (str "#L" from)
+    (str "#L" from "-" "L" to)))

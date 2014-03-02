@@ -67,7 +67,7 @@ goog.require('clojure.string');
 * Matches against user/repo and optional path
 */
 lt.plugins.gitbeam.github.repo_path_regex = /github\.com\/([^\/]+\/[^\/]+)(.*)?$/;
-lt.plugins.gitbeam.github.get_path_and_lines = (function get_path_and_lines(path){var vec__8301 = cljs.core.re_find.call(null,/([^#]+)(?:#L(\d+)(?:-L(\d+)|$))?/,path);var _ = cljs.core.nth.call(null,vec__8301,0,null);var path__$1 = cljs.core.nth.call(null,vec__8301,1,null);var from_line = cljs.core.nth.call(null,vec__8301,2,null);var to_line = cljs.core.nth.call(null,vec__8301,3,null);var from_line__$1 = parseInt(from_line);var to_line__$1 = parseInt(to_line);if(cljs.core.truth_((function (){var and__6743__auto__ = from_line__$1;if(cljs.core.truth_(and__6743__auto__))
+lt.plugins.gitbeam.github.get_path_and_lines = (function get_path_and_lines(path){var vec__8321 = cljs.core.re_find.call(null,/([^#]+)(?:#L(\d+)(?:-L(\d+)|$))?/,path);var _ = cljs.core.nth.call(null,vec__8321,0,null);var path__$1 = cljs.core.nth.call(null,vec__8321,1,null);var from_line = cljs.core.nth.call(null,vec__8321,2,null);var to_line = cljs.core.nth.call(null,vec__8321,3,null);var from_line__$1 = parseInt(from_line);var to_line__$1 = parseInt(to_line);if(cljs.core.truth_((function (){var and__6743__auto__ = from_line__$1;if(cljs.core.truth_(and__6743__auto__))
 {return to_line__$1;
 } else
 {return and__6743__auto__;
@@ -86,13 +86,19 @@ lt.plugins.gitbeam.github.get_path_and_lines = (function get_path_and_lines(path
 }
 }
 });
-lt.plugins.gitbeam.github.get_commit_and_path = (function get_commit_and_path(url){var G__8303 = url;var G__8303__$1 = (((G__8303 == null))?null:cljs.core.re_find.call(null,lt.plugins.gitbeam.github.repo_path_regex,G__8303));var G__8303__$2 = (((G__8303__$1 == null))?null:cljs.core.last.call(null,G__8303__$1));var G__8303__$3 = (((G__8303__$2 == null))?null:cljs.core.re_find.call(null,/\/[^\/]+\/([^\/]+)\/(.*)/,G__8303__$2));var G__8303__$4 = (((G__8303__$3 == null))?null:cljs.core.rest.call(null,G__8303__$3));return G__8303__$4;
+lt.plugins.gitbeam.github.get_commit_and_path = (function get_commit_and_path(url){var G__8323 = url;var G__8323__$1 = (((G__8323 == null))?null:cljs.core.re_find.call(null,lt.plugins.gitbeam.github.repo_path_regex,G__8323));var G__8323__$2 = (((G__8323__$1 == null))?null:cljs.core.last.call(null,G__8323__$1));var G__8323__$3 = (((G__8323__$2 == null))?null:cljs.core.re_find.call(null,/\/[^\/]+\/([^\/]+)\/(.*)/,G__8323__$2));var G__8323__$4 = (((G__8323__$3 == null))?null:cljs.core.rest.call(null,G__8323__$3));return G__8323__$4;
 });
 lt.plugins.gitbeam.github.get_project_name = (function get_project_name(url){return cljs.core.second.call(null,cljs.core.re_find.call(null,lt.plugins.gitbeam.github.repo_path_regex,url));
 });
 lt.plugins.gitbeam.github.build_url = (function build_url(base_url,commit,relative_url){return [cljs.core.str(base_url),cljs.core.str("/blob/"),cljs.core.str(commit),cljs.core.str("/"),cljs.core.str(relative_url)].join('');
 });
 lt.plugins.gitbeam.github.git_remote__GT_url = (function git_remote__GT_url(git_remote){return clojure.string.replace.call(null,git_remote,/^git@github.com:/,"https://github.com/");
+});
+lt.plugins.gitbeam.github.build_line_selection = (function build_line_selection(from,to){if(cljs.core._EQ_.call(null,from,to))
+{return [cljs.core.str("#L"),cljs.core.str(from)].join('');
+} else
+{return [cljs.core.str("#L"),cljs.core.str(from),cljs.core.str("-"),cljs.core.str("L"),cljs.core.str(to)].join('');
+}
 });
 }
 if(!lt.util.load.provided_QMARK_('lt.plugins.gitbeam.in')) {
@@ -174,6 +180,8 @@ goog.require('lt.objs.command');
 goog.require('lt.objs.files');
 goog.require('lt.plugins.gitbeam.github');
 goog.require('clojure.string');
+goog.require('lt.objs.editor');
+goog.require('lt.objs.editor');
 goog.require('lt.plugins.gitbeam.util');
 goog.require('lt.plugins.gitbeam.util');
 goog.require('lt.objs.editor.pool');
@@ -182,7 +190,17 @@ lt.plugins.gitbeam.out.git_remote__GT_base_url = (function git_remote__GT_base_u
 });
 lt.plugins.gitbeam.out.open = (function open(url){return lt.plugins.gitbeam.util.sh.call(null,"open",url);
 });
-lt.plugins.gitbeam.out.open_git_remote = (function open_git_remote(git_remote){return lt.plugins.gitbeam.out.open.call(null,lt.plugins.gitbeam.github.build_url.call(null,lt.plugins.gitbeam.out.git_remote__GT_base_url.call(null,cljs.core.second.call(null,cljs.core.re_find.call(null,/origin\t(\S+)/,git_remote))),"master",lt.objs.files.relative.call(null,lt.plugins.gitbeam.util.get_git_root.call(null,lt.plugins.gitbeam.util.get_cwd.call(null)),new cljs.core.Keyword(null,"path","path",1017337751).cljs$core$IFn$_invoke$arity$1(new cljs.core.Keyword(null,"info","info",1017141280).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,lt.objs.editor.pool.last_active.call(null)))))));
+lt.plugins.gitbeam.out.selected_lines = (function selected_lines(){var temp__4092__auto__ = lt.objs.editor.pool.last_active.call(null);if(cljs.core.truth_(temp__4092__auto__))
+{var ed = temp__4092__auto__;if(cljs.core.truth_(lt.objs.editor.selection_QMARK_.call(null,ed)))
+{var selection = lt.objs.editor.selection_bounds.call(null,ed);var from = (parseInt(cljs.core.get_in.call(null,selection,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"from","from",1017056028),new cljs.core.Keyword(null,"line","line",1017226086)], null))) + 1);var to = (parseInt(cljs.core.get_in.call(null,selection,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"to","to",1013907949),new cljs.core.Keyword(null,"line","line",1017226086)], null))) + 1);return lt.plugins.gitbeam.github.build_line_selection.call(null,from,to);
+} else
+{return null;
+}
+} else
+{return null;
+}
+});
+lt.plugins.gitbeam.out.open_git_remote = (function open_git_remote(git_remote){return lt.plugins.gitbeam.out.open.call(null,lt.plugins.gitbeam.github.build_url.call(null,lt.plugins.gitbeam.out.git_remote__GT_base_url.call(null,cljs.core.second.call(null,cljs.core.re_find.call(null,/origin\t(\S+)/,git_remote))),"master",[cljs.core.str(lt.objs.files.relative.call(null,lt.plugins.gitbeam.util.get_git_root.call(null,lt.plugins.gitbeam.util.get_cwd.call(null)),new cljs.core.Keyword(null,"path","path",1017337751).cljs$core$IFn$_invoke$arity$1(new cljs.core.Keyword(null,"info","info",1017141280).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,lt.objs.editor.pool.last_active.call(null)))))),cljs.core.str(lt.plugins.gitbeam.out.selected_lines.call(null))].join('')));
 });
 lt.plugins.gitbeam.out.open_current_file_with_browser = (function open_current_file_with_browser(){return lt.plugins.gitbeam.util.sh.call(null,"git","remote","-v",new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"cwd","cwd",1014003170),lt.plugins.gitbeam.util.get_git_root.call(null,lt.plugins.gitbeam.util.get_cwd.call(null)),new cljs.core.Keyword(null,"stdout","stdout",4416474557),lt.plugins.gitbeam.out.open_git_remote], null));
 });

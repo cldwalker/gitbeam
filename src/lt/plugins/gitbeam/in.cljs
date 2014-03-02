@@ -4,6 +4,8 @@
             [lt.objs.command :as cmd]
             [lt.objs.notifos :as notifos]
             [lt.objs.workspace :as workspace]
+            [lt.objs.editor :as editor]
+            [lt.objs.editor.pool :as pool]
             [lt.objs.files :as files]
             [clojure.string :as s]))
 
@@ -12,10 +14,29 @@
 (def repo-path-regex "Matches against user/repo and optional path"
   #"github\.com/([^/]+/[^/]+)(.*)?$")
 
+(defn get-path-and-lines [path]
+  (let [[_ path from-line to-line] (re-find #"([^#]+)(?:#L(\d+)(?:-L(\d+)|$))?" path)
+        from-line (js/parseInt from-line)
+        to-line (js/parseInt to-line)]
+    (cond
+     (and from-line to-line) [path {:from from-line :to to-line}]
+     from-line [path {:from from-line :to from-line}]
+     :else [path nil])))
+
+(defn select-lines [from to]
+  (when-let [ed (pool/last-active)]
+    (editor/set-selection
+     ed
+     {:line (dec from) :ch 0}
+     {:line (dec to) :ch (editor/line-length ed (dec to))})))
+
 (defn open-path [path]
-  (if (files/file? path)
-    (cmd/exec! :open-path path)
-    (notifos/set-msg! (str path " is not a valid file to open"))))
+  (let [[path lines] (get-path-and-lines path)]
+    (if (files/file? path)
+      (do (cmd/exec! :open-path path)
+        (when lines
+          (select-lines (:from lines) (:to lines))))
+      (notifos/set-msg! (str path " is not a valid file to open")))))
 
 (defn add-folder [url repo-dir]
   ;; TODO: (cmd/exec! :window.new)

@@ -60,9 +60,8 @@
     (add-repo url basename)
     (notifos/set-msg! (str url " is not a clonable url. Please try again."))))
 
-(defn clone-project-from-clipboard []
+(defn in-with-clipboard []
   (util/sh "pbpaste" {:stdout clone-project}))
 
-(cmd/command {:command :gitbeam.clone-project-from-clipboard
-              :desc "gitbeam: clones project using clipboard url"
-              :exec clone-project-from-clipboard})
+(defn in-with-current-word []
+  (clone-project (util/current-word)))

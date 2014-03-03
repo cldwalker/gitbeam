@@ -44,14 +44,10 @@
       (.log js/console "STDERR:" stderr)
       (notifos/set-msg! "Unable to acquire all git information necessary to open a url."))))
 
-(defn open-current-file-with-browser []
+(defn out-with-external-browser []
   ;; To figure out remote, don't use `git config --get remote.origin.url`
   ;; which doesn't expand aliased urls
   (util/capture "REMOTE=`git remote -v`;COMMIT=`git rev-parse HEAD`"
                 ["REMOTE" "COMMIT"]
                 process-git-commands
                 {:cwd (util/get-git-root (util/get-cwd))}))
-
-(cmd/command {:command :gitbeam.open-current-file-with-browser
-              :desc "gitbeam: opens current file on github with external browser"
-              :exec open-current-file-with-browser})

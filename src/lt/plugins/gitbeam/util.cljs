@@ -1,5 +1,6 @@
 (ns lt.plugins.gitbeam.util
   (:require [lt.objs.editor.pool :as pool]
+            [lt.objs.editor :as editor]
             [lt.objs.proc :as proc]
             [clojure.string :as s]
             [lt.objs.files :as files]))
@@ -39,3 +40,18 @@
          (clj->js sh-opts)
          (fn [err out stderr]
            (cb (zipmap vars (s/split out ";")) stderr))))
+
+(defn current-word*
+  "Returns current word given string and cursor position in string"
+  [string cursor]
+  (str
+   (re-find #"\S+$" (subs string 0 cursor))
+   (re-find #"\S+" (subs string cursor))))
+
+(defn current-word
+  "Current word under cursor"
+  []
+  (when-let [ed (pool/last-active)]
+    (let [cursor (editor/->cursor ed)]
+      (current-word* (editor/line ed (:line cursor))
+                    (:ch cursor)))))

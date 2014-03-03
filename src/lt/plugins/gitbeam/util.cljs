@@ -1,7 +1,10 @@
 (ns lt.plugins.gitbeam.util
+  "Util fns that are useful to any plugin"
   (:require [lt.objs.editor.pool :as pool]
             [lt.objs.editor :as editor]
             [lt.objs.proc :as proc]
+            [lt.objs.tabs :as tabs]
+            [lt.objs.command :as cmd]
             [clojure.string :as s]
             [lt.objs.files :as files]))
 
@@ -55,3 +58,19 @@
     (let [cursor (editor/->cursor ed)]
       (current-word* (editor/line ed (:line cursor))
                     (:ch cursor)))))
+
+(defn tabset-open
+  "Opens url with internal browser in a second tabset"
+  [url]
+  (let [pre-commands (if (< (-> @tabs/multi :tabsets count) 2)
+                       [:tabset.new] [])
+        commands (into pre-commands
+                       [:add-browser-tab
+                        :tabs.move-next-tabset
+                        :browser.url-bar.focus
+                        [:browser.url-bar.navigate! url]
+                        :browser.focus-content])]
+    (doseq [c commands]
+      (if (coll? c)
+        (apply cmd/exec! c)
+        (cmd/exec! c)))))

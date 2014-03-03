@@ -18,3 +18,7 @@
 (cmd/command {:command :gitbeam.out-with-clipboard-copy
               :desc "gitbeam: copies to clipboard github url equivalent of current file"
               :exec out/out-with-clipboard-copy})
+
+(cmd/command {:command :gitbeam.out-with-internal-browser
+              :desc "gitbeam: opens current file on github with internal browser"
+              :exec out/out-with-internal-browser})

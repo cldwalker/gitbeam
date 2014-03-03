@@ -59,3 +59,4 @@
 
 (def out-with-external-browser (partial out-with open))
 (def out-with-clipboard-copy (partial out-with copy))
+(def out-with-internal-browser (partial out-with util/tabset-open))

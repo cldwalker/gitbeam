@@ -156,8 +156,8 @@ goog.require('clojure.string');
 /**
 * Matches against user/repo and optional path
 */
-lt.plugins.gitbeam.github.repo_path_regex = /github\.com\/([^\/]+\/[^\/]+)(.*)?$/;
-lt.plugins.gitbeam.github.get_path_and_lines = (function get_path_and_lines(path){var vec__8325 = cljs.core.re_find.call(null,/([^#]+)(?:#L(\d+)(?:-L(\d+)|$))?/,path);var _ = cljs.core.nth.call(null,vec__8325,0,null);var path__$1 = cljs.core.nth.call(null,vec__8325,1,null);var from_line = cljs.core.nth.call(null,vec__8325,2,null);var to_line = cljs.core.nth.call(null,vec__8325,3,null);var from_line__$1 = parseInt(from_line);var to_line__$1 = parseInt(to_line);if(cljs.core.truth_((function (){var and__6743__auto__ = from_line__$1;if(cljs.core.truth_(and__6743__auto__))
+lt.plugins.gitbeam.github.repo_path_regex = /(?:github\.com\/|git@github\.com:)([^\/]+\/[^\/]+)(.*)?$/;
+lt.plugins.gitbeam.github.get_path_and_lines = (function get_path_and_lines(path){var vec__9059 = cljs.core.re_find.call(null,/([^#]+)(?:#L(\d+)(?:-L(\d+)|$))?/,path);var _ = cljs.core.nth.call(null,vec__9059,0,null);var path__$1 = cljs.core.nth.call(null,vec__9059,1,null);var from_line = cljs.core.nth.call(null,vec__9059,2,null);var to_line = cljs.core.nth.call(null,vec__9059,3,null);var from_line__$1 = parseInt(from_line);var to_line__$1 = parseInt(to_line);if(cljs.core.truth_((function (){var and__6743__auto__ = from_line__$1;if(cljs.core.truth_(and__6743__auto__))
 {return to_line__$1;
 } else
 {return and__6743__auto__;
@@ -176,7 +176,7 @@ lt.plugins.gitbeam.github.get_path_and_lines = (function get_path_and_lines(path
 }
 }
 });
-lt.plugins.gitbeam.github.get_commit_and_path = (function get_commit_and_path(url){var G__8327 = url;var G__8327__$1 = (((G__8327 == null))?null:cljs.core.re_find.call(null,lt.plugins.gitbeam.github.repo_path_regex,G__8327));var G__8327__$2 = (((G__8327__$1 == null))?null:cljs.core.last.call(null,G__8327__$1));var G__8327__$3 = (((G__8327__$2 == null))?null:cljs.core.re_find.call(null,/\/[^\/]+\/([^\/]+)\/(.*)/,G__8327__$2));var G__8327__$4 = (((G__8327__$3 == null))?null:cljs.core.rest.call(null,G__8327__$3));return G__8327__$4;
+lt.plugins.gitbeam.github.get_commit_and_path = (function get_commit_and_path(url){var G__9061 = url;var G__9061__$1 = (((G__9061 == null))?null:cljs.core.re_find.call(null,lt.plugins.gitbeam.github.repo_path_regex,G__9061));var G__9061__$2 = (((G__9061__$1 == null))?null:cljs.core.last.call(null,G__9061__$1));var G__9061__$3 = (((G__9061__$2 == null))?null:cljs.core.re_find.call(null,/\/[^\/]+\/([^\/]+)\/(.*)/,G__9061__$2));var G__9061__$4 = (((G__9061__$3 == null))?null:cljs.core.rest.call(null,G__9061__$3));return G__9061__$4;
 });
 lt.plugins.gitbeam.github.get_project_name = (function get_project_name(url){return cljs.core.second.call(null,cljs.core.re_find.call(null,lt.plugins.gitbeam.github.repo_path_regex,url));
 });
@@ -223,7 +223,7 @@ lt.plugins.gitbeam.in$.select_lines = (function select_lines(from,to){var temp__
 {return null;
 }
 });
-lt.plugins.gitbeam.in$.open_path = (function open_path(path){var vec__9051 = lt.plugins.gitbeam.github.get_path_and_lines.call(null,path);var path__$1 = cljs.core.nth.call(null,vec__9051,0,null);var lines = cljs.core.nth.call(null,vec__9051,1,null);if(cljs.core.truth_(lt.objs.files.file_QMARK_.call(null,path__$1)))
+lt.plugins.gitbeam.in$.open_path = (function open_path(path){var vec__9071 = lt.plugins.gitbeam.github.get_path_and_lines.call(null,path);var path__$1 = cljs.core.nth.call(null,vec__9071,0,null);var lines = cljs.core.nth.call(null,vec__9071,1,null);if(cljs.core.truth_(lt.objs.files.file_QMARK_.call(null,path__$1)))
 {lt.objs.command.exec_BANG_.call(null,new cljs.core.Keyword(null,"open-path","open-path",2513940794),path__$1);
 if(cljs.core.truth_(lines))
 {return lt.plugins.gitbeam.in$.select_lines.call(null,new cljs.core.Keyword(null,"from","from",1017056028).cljs$core$IFn$_invoke$arity$1(lines),new cljs.core.Keyword(null,"to","to",1013907949).cljs$core$IFn$_invoke$arity$1(lines));
@@ -237,7 +237,7 @@ if(cljs.core.truth_(lines))
 lt.plugins.gitbeam.in$.add_folder = (function add_folder(url,repo_dir){lt.object.raise.call(null,lt.objs.workspace.current_ws,new cljs.core.Keyword(null,"add.folder!","add.folder!",2151595160),repo_dir);
 lt.objs.notifos.done_working.call(null,[cljs.core.str("Successfully added folder "),cljs.core.str(repo_dir)].join(''));
 var temp__4092__auto__ = lt.plugins.gitbeam.github.get_commit_and_path.call(null,url);if(cljs.core.truth_(temp__4092__auto__))
-{var vec__9053 = temp__4092__auto__;var commit = cljs.core.nth.call(null,vec__9053,0,null);var relative_path = cljs.core.nth.call(null,vec__9053,1,null);return lt.plugins.gitbeam.util.sh.call(null,"git","checkout",commit,new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"cwd","cwd",1014003170),repo_dir,new cljs.core.Keyword(null,"callback","callback",841683895),cljs.core.partial.call(null,lt.plugins.gitbeam.in$.open_path,lt.objs.files.join.call(null,repo_dir,relative_path))], null));
+{var vec__9073 = temp__4092__auto__;var commit = cljs.core.nth.call(null,vec__9073,0,null);var relative_path = cljs.core.nth.call(null,vec__9073,1,null);return lt.plugins.gitbeam.util.sh.call(null,"git","checkout",commit,new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"cwd","cwd",1014003170),repo_dir,new cljs.core.Keyword(null,"callback","callback",841683895),cljs.core.partial.call(null,lt.plugins.gitbeam.in$.open_path,lt.objs.files.join.call(null,repo_dir,relative_path))], null));
 } else
 {return null;
 }

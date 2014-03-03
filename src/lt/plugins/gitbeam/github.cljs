@@ -4,7 +4,7 @@
 ;; beam in
 ;; -------
 (def repo-path-regex "Matches against user/repo and optional path"
-  #"github\.com/([^/]+/[^/]+)(.*)?$")
+  #"(?:github\.com/|git@github\.com:)([^/]+/[^/]+)(.*)?$")
 
 (defn get-path-and-lines [path]
   (let [[_ path from-line to-line] (re-find #"([^#]+)(?:#L(\d+)(?:-L(\d+)|$))?" path)

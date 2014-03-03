@@ -7,6 +7,7 @@
             [lt.objs.workspace :as workspace]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
+            [lt.objs.statusbar :as statusbar]
             [lt.objs.files :as files]
             [clojure.string :as s]))
 
@@ -30,6 +31,7 @@
 (defn add-folder [url repo-dir]
   ;; TODO: (cmd/exec! :window.new)
   (obj/raise workspace/current-ws :add.folder! repo-dir)
+  (notifos/done-working (str "Successfully added folder " repo-dir))
 
   (when-let [[commit relative-path] (github/get-commit-and-path url)]
     ;; TODO: distinguish real stderr from "already on master" non-error
@@ -38,20 +40,30 @@
               :callback (partial open-path
                                  (files/join repo-dir relative-path))})))
 
+;; we use :callback here because clone sometimes stderrs
+;; even when it has succeeded
+(defn git-clone [clone-url url repo-dir]
+  ;; Add a longer timeout than done-working for large projects
+  (notifos/set-msg! (str "Cloning " clone-url) {:timeout 30000})
+  (statusbar/loader-inc)
+  (util/sh "git" "clone"
+           clone-url
+           repo-dir
+           {:callback (partial add-folder url repo-dir)}))
+
 (defn add-repo [url basename]
   (let [repo-dir (files/join clone-dir (s/replace basename "/" "_"))]
     (if (files/exists? repo-dir)
       ;; TODO: double check it's the correct repo with remote -v
-      (util/sh "git" "pull"
+      (do
+        (notifos/working (str "Updating " repo-dir))
+        (util/sh "git" "pull"
                {:cwd repo-dir
-                :callback (partial add-folder url repo-dir)})
-      ;; we use :callback here because clone sometimes stderrs
-      ;; even when it has succeeded
-      (util/sh "git" "clone"
-               (re-find (re-pattern (str ".*" basename))
-                        url)
-               repo-dir
-               {:callback (partial add-folder url repo-dir)}))))
+                :callback (partial add-folder url repo-dir)}))
+      (git-clone
+       (re-find (re-pattern (str ".*" basename)) url)
+       url
+       repo-dir))))
 
 (defn clone-project [url]
   (when-not (files/exists? clone-dir)

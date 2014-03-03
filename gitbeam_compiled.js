@@ -219,6 +219,8 @@ lt.plugins.gitbeam.out.git_remote__GT_base_url = (function git_remote__GT_base_u
 });
 lt.plugins.gitbeam.out.open = (function open(url){return lt.plugins.gitbeam.util.sh.call(null,"open",url);
 });
+lt.plugins.gitbeam.out.copy = (function copy(url){return lt.plugins.gitbeam.util.capture.call(null,[cljs.core.str("echo "),cljs.core.str(url),cljs.core.str(" | pbcopy")].join(''),cljs.core.PersistentVector.EMPTY,cljs.core.constantly.call(null,null),cljs.core.PersistentArrayMap.EMPTY);
+});
 lt.plugins.gitbeam.out.selected_lines = (function selected_lines(){var temp__4092__auto__ = lt.objs.editor.pool.last_active.call(null);if(cljs.core.truth_(temp__4092__auto__))
 {var ed = temp__4092__auto__;if(cljs.core.truth_(lt.objs.editor.selection_QMARK_.call(null,ed)))
 {var selection = lt.objs.editor.selection_bounds.call(null,ed);var from = (parseInt(cljs.core.get_in.call(null,selection,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"from","from",1017056028),new cljs.core.Keyword(null,"line","line",1017226086)], null))) + 1);var to = (parseInt(cljs.core.get_in.call(null,selection,new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"to","to",1013907949),new cljs.core.Keyword(null,"line","line",1017226086)], null))) + 1);return lt.plugins.gitbeam.github.build_line_selection.call(null,from,to);
@@ -229,22 +231,24 @@ lt.plugins.gitbeam.out.selected_lines = (function selected_lines(){var temp__409
 {return null;
 }
 });
-lt.plugins.gitbeam.out.open_by_remote_and_commit = (function open_by_remote_and_commit(remote,commit){return lt.plugins.gitbeam.out.open.call(null,lt.plugins.gitbeam.github.build_url.call(null,lt.plugins.gitbeam.out.git_remote__GT_base_url.call(null,cljs.core.second.call(null,cljs.core.re_find.call(null,/origin\t(\S+)/,remote))),commit,[cljs.core.str(lt.objs.files.relative.call(null,lt.plugins.gitbeam.util.get_git_root.call(null,lt.plugins.gitbeam.util.get_cwd.call(null)),new cljs.core.Keyword(null,"path","path",1017337751).cljs$core$IFn$_invoke$arity$1(new cljs.core.Keyword(null,"info","info",1017141280).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,lt.objs.editor.pool.last_active.call(null)))))),cljs.core.str(lt.plugins.gitbeam.out.selected_lines.call(null))].join('')));
+lt.plugins.gitbeam.out.build_url = (function build_url(remote,commit){var base_url = lt.plugins.gitbeam.out.git_remote__GT_base_url.call(null,cljs.core.second.call(null,cljs.core.re_find.call(null,/origin\t(\S+)/,remote)));var relative_path = [cljs.core.str(lt.objs.files.relative.call(null,lt.plugins.gitbeam.util.get_git_root.call(null,lt.plugins.gitbeam.util.get_cwd.call(null)),new cljs.core.Keyword(null,"path","path",1017337751).cljs$core$IFn$_invoke$arity$1(new cljs.core.Keyword(null,"info","info",1017141280).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,lt.objs.editor.pool.last_active.call(null)))))),cljs.core.str(lt.plugins.gitbeam.out.selected_lines.call(null))].join('');return lt.plugins.gitbeam.github.build_url.call(null,base_url,commit,relative_path);
 });
-lt.plugins.gitbeam.out.process_git_commands = (function process_git_commands(p__8493,stderr){var map__8495 = p__8493;var map__8495__$1 = ((cljs.core.seq_QMARK_.call(null,map__8495))?cljs.core.apply.call(null,cljs.core.hash_map,map__8495):map__8495);var commit = cljs.core.get.call(null,map__8495__$1,"COMMIT");var remote = cljs.core.get.call(null,map__8495__$1,"REMOTE");if(cljs.core.truth_((function (){var and__6743__auto__ = commit;if(cljs.core.truth_(and__6743__auto__))
+lt.plugins.gitbeam.out.process_git_commands = (function process_git_commands(url_fn,p__8596,stderr){var map__8598 = p__8596;var map__8598__$1 = ((cljs.core.seq_QMARK_.call(null,map__8598))?cljs.core.apply.call(null,cljs.core.hash_map,map__8598):map__8598);var commit = cljs.core.get.call(null,map__8598__$1,"COMMIT");var remote = cljs.core.get.call(null,map__8598__$1,"REMOTE");if(cljs.core.truth_((function (){var and__6743__auto__ = commit;if(cljs.core.truth_(and__6743__auto__))
 {return remote;
 } else
 {return and__6743__auto__;
 }
 })()))
-{return lt.plugins.gitbeam.out.open_by_remote_and_commit.call(null,remote,commit);
+{return url_fn.call(null,lt.plugins.gitbeam.out.build_url.call(null,remote,commit));
 } else
 {console.log("STDERR:",stderr);
 return lt.objs.notifos.set_msg_BANG_.call(null,"Unable to acquire all git information necessary to open a url.");
 }
 });
-lt.plugins.gitbeam.out.out_with_external_browser = (function out_with_external_browser(){return lt.plugins.gitbeam.util.capture.call(null,"REMOTE=`git remote -v`;COMMIT=`git rev-parse HEAD`",new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, ["REMOTE","COMMIT"], null),lt.plugins.gitbeam.out.process_git_commands,new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"cwd","cwd",1014003170),lt.plugins.gitbeam.util.get_git_root.call(null,lt.plugins.gitbeam.util.get_cwd.call(null))], null));
+lt.plugins.gitbeam.out.out_with = (function out_with(url_fn){return lt.plugins.gitbeam.util.capture.call(null,"REMOTE=`git remote -v`;COMMIT=`git rev-parse HEAD`",new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, ["REMOTE","COMMIT"], null),cljs.core.partial.call(null,lt.plugins.gitbeam.out.process_git_commands,url_fn),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"cwd","cwd",1014003170),lt.plugins.gitbeam.util.get_git_root.call(null,lt.plugins.gitbeam.util.get_cwd.call(null))], null));
 });
+lt.plugins.gitbeam.out.out_with_external_browser = cljs.core.partial.call(null,lt.plugins.gitbeam.out.out_with,lt.plugins.gitbeam.out.open);
+lt.plugins.gitbeam.out.out_with_clipboard_copy = cljs.core.partial.call(null,lt.plugins.gitbeam.out.out_with,lt.plugins.gitbeam.out.copy);
 }
 if(!lt.util.load.provided_QMARK_('lt.plugins.gitbeam')) {
 goog.provide('lt.plugins.gitbeam');
@@ -258,6 +262,7 @@ goog.require('lt.objs.command');
 lt.objs.command.command.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"command","command",1964298941),new cljs.core.Keyword(null,"gitbeam.in-with-current-word","gitbeam.in-with-current-word",3573002908),new cljs.core.Keyword(null,"desc","desc",1016984067),"gitbeam: open project using url under cursor",new cljs.core.Keyword(null,"exec","exec",1017031683),lt.plugins.gitbeam.in$.in_with_current_word], null));
 lt.objs.command.command.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"command","command",1964298941),new cljs.core.Keyword(null,"gitbeam.in-with-clipboard","gitbeam.in-with-clipboard",2974254140),new cljs.core.Keyword(null,"desc","desc",1016984067),"gitbeam: open project using clipboard url",new cljs.core.Keyword(null,"exec","exec",1017031683),lt.plugins.gitbeam.in$.in_with_clipboard], null));
 lt.objs.command.command.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"command","command",1964298941),new cljs.core.Keyword(null,"gitbeam.out-with-external-browser","gitbeam.out-with-external-browser",4120174163),new cljs.core.Keyword(null,"desc","desc",1016984067),"gitbeam: opens current file on github with external browser",new cljs.core.Keyword(null,"exec","exec",1017031683),lt.plugins.gitbeam.out.out_with_external_browser], null));
+lt.objs.command.command.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"command","command",1964298941),new cljs.core.Keyword(null,"gitbeam.out-with-clipboard-copy","gitbeam.out-with-clipboard-copy",2842434361),new cljs.core.Keyword(null,"desc","desc",1016984067),"gitbeam: copies to clipboard github url equivalent of current file",new cljs.core.Keyword(null,"exec","exec",1017031683),lt.plugins.gitbeam.out.out_with_clipboard_copy], null));
 }
 
 //# sourceMappingURL=gitbeam_compiled.js.map

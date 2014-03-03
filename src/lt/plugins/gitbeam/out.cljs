@@ -18,6 +18,14 @@
 (defn open [url]
   (util/sh "open" url))
 
+;; OSX-specific for now
+(defn copy [url]
+  ; can't use sh because of stdin
+  (util/capture (str "echo " url " | pbcopy")
+                []
+                (constantly nil)
+                {}))
+
 (defn selected-lines []
   (when-let [ed (pool/last-active)]
     (when (editor/selection? ed)
@@ -26,28 +34,28 @@
             to (-> selection (get-in [:to :line]) js/parseInt inc)]
         (github/build-line-selection from to)))))
 
-(defn open-by-remote-and-commit [remote commit]
-  (-> (->> remote (re-find #"origin\t(\S+)") second)
-      git-remote->base-url
-      (github/build-url commit
-                        (str
-                         (files/relative
-                          (util/get-git-root (util/get-cwd))
-                          (-> @(pool/last-active) :info :path))
-                         (selected-lines)))
-      open))
+(defn build-url [remote commit]
+  (let [base-url (->> remote (re-find #"origin\t(\S+)") second git-remote->base-url)
+        relative-path (str (files/relative
+                            (util/get-git-root (util/get-cwd))
+                            (-> @(pool/last-active) :info :path))
+                           (selected-lines))]
+    (github/build-url base-url commit relative-path)))
 
-(defn process-git-commands [{commit "COMMIT" remote "REMOTE"} stderr]
+(defn process-git-commands [url-fn {commit "COMMIT" remote "REMOTE"} stderr]
   (if (and commit remote)
-    (open-by-remote-and-commit remote commit)
+    (url-fn (build-url remote commit))
     (do
       (.log js/console "STDERR:" stderr)
       (notifos/set-msg! "Unable to acquire all git information necessary to open a url."))))
 
-(defn out-with-external-browser []
+(defn out-with [url-fn]
   ;; To figure out remote, don't use `git config --get remote.origin.url`
   ;; which doesn't expand aliased urls
   (util/capture "REMOTE=`git remote -v`;COMMIT=`git rev-parse HEAD`"
                 ["REMOTE" "COMMIT"]
-                process-git-commands
+                (partial process-git-commands url-fn)
                 {:cwd (util/get-git-root (util/get-cwd))}))
+
+(def out-with-external-browser (partial out-with open))
+(def out-with-clipboard-copy (partial out-with copy))

@@ -72,6 +72,7 @@
     (add-repo url basename)
     (notifos/set-msg! (str url " is not a clonable url. Please try again."))))
 
+;; OSX-specific for now
 (defn in-with-clipboard []
   (util/sh "pbpaste" {:stdout clone-project}))
 

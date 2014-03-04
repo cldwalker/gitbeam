@@ -18,14 +18,6 @@
 (defn open [url]
   (util/sh "open" url))
 
-;; OSX-specific for now
-(defn copy [url]
-  ; can't use sh because of stdin
-  (util/capture (str "echo " url " | pbcopy")
-                []
-                (constantly nil)
-                {}))
-
 (defn selected-lines []
   (when-let [ed (pool/last-active)]
     (when (editor/selection? ed)
@@ -58,5 +50,5 @@
                 {:cwd (util/get-git-root (util/get-cwd))}))
 
 (def out-with-external-browser (partial out-with open))
-(def out-with-clipboard-copy (partial out-with copy))
+(def out-with-clipboard-copy (partial out-with util/copy))
 (def out-with-internal-browser (partial out-with util/tabset-open))

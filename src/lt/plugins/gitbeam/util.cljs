@@ -74,3 +74,11 @@
       (if (coll? c)
         (apply cmd/exec! c)
         (cmd/exec! c)))))
+
+(def clipboard (.Clipboard.get (js/require "nw.gui")))
+
+(defn copy [text]
+  (.set clipboard text "text"))
+
+(defn paste []
+  (.get clipboard "text"))

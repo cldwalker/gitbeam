@@ -16,7 +16,7 @@ To access its commands, open the command bar (Ctrl-Space) and type "gitbeam".
 
 gitbeam provides the following URL->file (beam in) commands:
 
-* `:gitbeam.in-with-clipboard` (OSX only) - opens a project using a clipboard url
+* `:gitbeam.in-with-clipboard` - opens a project using a clipboard url
 * `:gitbeam.in-with-current-word` - opens a project for the url under the cursor
 
 These commands clone a project, add it to the current workspace, checkout the specified commit and
@@ -34,7 +34,7 @@ gitbeam provides the following file->URL (beam out) commands:
 
 * `:gitbeam.out-with-external-browser` (OSX only) - opens current file on github with external browser
 * `:gitbeam.out-with-internal-browser` - opens current file on github with LT's browser
-* `:gitbeam.out-with-clipboard-copy` (OSX only) - copies github url of current file to clipboard
+* `:gitbeam.out-with-clipboard-copy` - copies github url of current file to clipboard
 
 These commands operate on the url equivalent of a selected file and optionally handle selected
 lines.
@@ -48,8 +48,7 @@ Note: when mapping gitbeam.out commands, editor selection *cannot* be detected i
 
 ## Limitations
 
-All commands are known to work with LT 0.6.4 and OSX. As noted in [Usage](#usage), some commands are only supported
-in OSX.
+All commands should work with LT >= 0.6.4. Opening a browser is only supported in OSX.
 
 ## Bugs/Issues
 
@@ -63,7 +62,7 @@ There are a couple of enhancements that would be welcome:
 
 * Importing a project in a new window instead of the current one
 * Add support for other git-based sites e.g. bitbucket. Currently there is only [github support](https://github.com/cldwalker/gitbeam/blob/master/src/lt/plugins/gitbeam/github.cljs).
-* Add cross-platform support for copying, reading from clipboard and opening a browser. Currently there is only Mac OSX support.
+* Add cross-platform support for opening a browser. Currently there is only Mac OSX support.
 
 ## TODO
 * Add tests

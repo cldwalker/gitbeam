@@ -69,4 +69,4 @@ There are a couple of enhancements that would be welcome:
 * Add tests
 
 ## Links
-* [open-on-github](https://github.com/atom/open-on-github) - Atom plugin which has the first half of this functionality's plugin.
+* [open-on-github](https://github.com/atom/open-on-github) - Atom plugin which has the beam out functionality of this plugin.

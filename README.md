@@ -5,6 +5,10 @@ browse any github url locally and with another command browse the current file o
 commands work for any file path and git SHA as well as preserve lines selected in LT or in the
 browser.
 
+## Install
+
+Install this plugin with LT's plugin manager or clone this project to your LT plugins directory.
+
 ## Usage
 
 gitbeam does not assume any default keybindings for its commands. [See below](#configuration) to configure them.

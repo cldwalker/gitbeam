@@ -68,5 +68,9 @@ There are a couple of enhancements that would be welcome:
 ## TODO
 * Add tests
 
+## Credits
+
+* @stuartsierra - For [emacs implementation](https://github.com/stuartsierra/dotfiles/blob/master/.emacs.d/local/find-on-github.el) which inspired the first half of this.
+
 ## Links
 * [open-on-github](https://github.com/atom/open-on-github) - Atom plugin which has the beam out functionality of this plugin.

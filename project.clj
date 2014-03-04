@@ -1,2 +1,2 @@
-(defproject gitbeam "0.1.0"
+(defproject gitbeam "0.2.0"
   :dependencies [[org.clojure/clojure "1.5.1"]])

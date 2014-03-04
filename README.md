@@ -32,7 +32,7 @@ Examples:
 
 gitbeam provides the following file->URL (beam out) commands:
 
-* `:gitbeam.out-with-external-browser` (OSX only) - opens current file on github with external browser
+* `:gitbeam.out-with-external-browser` - opens current file on github with external browser
 * `:gitbeam.out-with-internal-browser` - opens current file on github with LT's browser
 * `:gitbeam.out-with-clipboard-copy` - copies github url of current file to clipboard
 
@@ -46,13 +46,12 @@ To map a key to a command, add an entry in user.keymap. For example, under `:edi
 Note: when mapping gitbeam.out commands, editor selection *cannot* be detected if using
 `lt.plugins.vim/map-keys`.
 
-## Limitations
-
-All commands should work with LT >= 0.6.4. Opening a browser is only supported in OSX.
 
 ## Bugs/Issues
 
 Please report them [on github](http://github.com/cldwalker/gitbeam/issues).
+
+All commands should work with LT >= 0.6.4.
 
 ## Contributions
 
@@ -62,7 +61,6 @@ There are a couple of enhancements that would be welcome:
 
 * Importing a project in a new window instead of the current one
 * Add support for other git-based sites e.g. bitbucket. Currently there is only [github support](https://github.com/cldwalker/gitbeam/blob/master/src/lt/plugins/gitbeam/github.cljs).
-* Add cross-platform support for opening a browser. Currently there is only Mac OSX support.
 
 ## TODO
 * Add tests

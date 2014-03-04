@@ -6,6 +6,7 @@
             [lt.objs.editor :as editor]
             [lt.objs.command :as cmd]
             [lt.objs.notifos :as notifos]
+            [lt.objs.platform :as platform]
             [lt.objs.files :as files]))
 
 (defn git-remote->base-url [git-remote]
@@ -13,10 +14,6 @@
       s/trim-newline
       github/git-remote->url
       (s/replace #"\.git$" "")))
-
-;; OSX-specific for now
-(defn open [url]
-  (util/sh "open" url))
 
 (defn selected-lines []
   (when-let [ed (pool/last-active)]
@@ -49,6 +46,6 @@
                 (partial process-git-commands url-fn)
                 {:cwd (util/get-git-root (util/get-cwd))}))
 
-(def out-with-external-browser (partial out-with open))
+(def out-with-external-browser (partial out-with platform/open))
 (def out-with-clipboard-copy (partial out-with util/copy))
 (def out-with-internal-browser (partial out-with util/tabset-open))

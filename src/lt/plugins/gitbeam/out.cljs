@@ -47,5 +47,5 @@
                 {:cwd (util/get-git-root (util/get-cwd))}))
 
 (def out-with-external-browser (partial out-with platform/open))
-(def out-with-clipboard-copy (partial out-with util/copy))
+(def out-with-clipboard-copy (partial out-with platform/copy))
 (def out-with-internal-browser (partial out-with util/tabset-open))

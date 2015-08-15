@@ -7,6 +7,7 @@
             [lt.objs.workspace :as workspace]
             [lt.objs.editor :as editor]
             [lt.objs.editor.pool :as pool]
+            [lt.objs.platform :as platform]
             [lt.objs.statusbar :as statusbar]
             [lt.objs.files :as files]
             [clojure.string :as s]))
@@ -73,7 +74,7 @@
     (notifos/set-msg! (str url " is not a clonable url. Please try again."))))
 
 (defn in-with-clipboard []
-  (clone-project (util/paste)))
+  (clone-project (platform/paste)))
 
 (defn in-with-current-word []
   (clone-project (util/current-word)))

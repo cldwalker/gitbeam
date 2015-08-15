@@ -8,6 +8,7 @@ browser.
 ## Install
 
 Install this plugin with LT's plugin manager or clone this project to your LT plugins directory.
+This plugin requires LT >= 0.7.0.
 
 ## Usage
 
